@@ -8,26 +8,43 @@
 
 
 
+#include<jni.h>
+#include<stdio.h>
 
+int main(int argc, char** argv) {
 
-
-
-int main() {
-    JavaVMOption options[1];
+    JavaVM *vm;
     JNIEnv *env;
-    JavaVM *jvm;
     JavaVMInitArgs vm_args;
-    long status;
-    jclass testCls;
-    jmethodID testMid;
-    jobject testJobj;envjobject tookitReturnObj;
-    //设置Java类的路径
-    options[0].optionString = "-Djava.class.path=. ;D:\\workspace\\my\\JniTest\\jnitest.jar";
-    vm_args.version = JNI_VERSION_1_6;
-    vm_args.nOptions = 1;
-    vm_args.options = options;
-    vm_args.ignoreUnrecognized = JNI_TRUE;
-    status = JNI_CreateJavaVM(&jvm, (void**)&env, &vm_args);
+    vm_args.version = JNI_VERSION_1_2;
+    vm_args.nOptions = 0;
+    vm_args.ignoreUnrecognized = 1;
+
+    //Construct a VM
+    jint res = JNI_CreateJavaVM(&vm, (void **)&env, &vm_args);
+
+    // Construct a String
+    jstring jstr = env->NewStringUTF("Hello World");
+
+    // First get the class that contains the method you need to call
+    jclass clazz = env->FindClass("java/lang/String");
+
+    // Get the method that you want to call
+    jmethodID to_lower = env->GetMethodID(clazz, "toLowerCase",
+            "()Ljava/lang/String;");
+    // Call the method on the object
+    jobject result = env->CallObjectMethod(jstr, to_lower);
+
+    // Get a C-style string
+    const char* str = env->GetStringUTFChars((jstring) result, NULL);
+
+    printf("%s\n", str);
+
+    // Clean up
+    env->ReleaseStringUTFChars(jstr, str);
+
+    // Shutdown the VM.
+    vm->DestroyJavaVM();
 }
 
 

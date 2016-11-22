@@ -8,14 +8,15 @@
 
 
 
-#include<jni.h>
-#include<stdio.h>
+#include <jni.h>
+#include <stdio.h>
 #include <pthread.h>
 #include <iostream>
 #include <boost/thread/thread.hpp>
 
 JavaVM *vm = NULL;
 void  thream_task() {
+
 
     JNIEnv *env;
     vm->AttachCurrentThread((void **)&env, NULL);  
